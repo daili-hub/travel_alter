@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>论坛</title>
+        <link rel="stylesheet" type="text/css" href="css/common.css">
+        <link rel="stylesheet" type="text/css" href="css/ranking-list.css">
+        <link rel="stylesheet" href="css/bootstrap.min.css" type="text/css">
+        <script src="js/jquery-3.3.1.js"></script>
+        <script>
+
+            function disp_prompt()
+            {
+                var review=prompt("请输入您要评论的信息","Bill Gates");
+                if (review!=null && review!="")
+                {
+                    $.get("reviewServlet",{review:review},function () {
+
+
+                    });
+                    document.write("你好，" + name + "！今天过得好吗？")
+                }
+            }
+            function publish() {
+                //1.判断用户是否登录
+                $.get("user/findOne",{},function (user) {
+
+                    if(user){
+                        location.href="http://localhost/travel/publish.html"
+                        // $.get("route/addFavorite",{rid:rid},function () {
+                        //     location.reload();
+                        // });
+                    }else {
+                        alert("您尚未登录，请先登录");
+                        location.href="http://localhost/travel/login.html";
+                    }
+                });
+            }
+            function getFormatDate(str) {
+                var oDate = new Date(str);
+                var oYear = oDate.getFullYear();
+                var oMonth = oDate.getMonth() + 1;
+                var oDay = oDate.getDate();
+                var oHour = oDate.getHours();
+                var oMin = oDate.getMinutes();
+                var oSen = oDate.getSeconds();
+                var oTime = oYear + '-' + oMonth + '-' + oDay;
+                return oTime;
+            }
+            $(function () {
+                $.get("forumServlet",{},function (forums) {
+                    var divs="";
+                    for(var i = 0; i< forums.length; i++){
+                        var div = '<div class="panel panel-default" id="divs" style="margin-top: 20px">\n' +
+                            '                    <div class="panel-heading" style="color: #28a4c9;font-size: large">标题：<span>'+forums[i].title+'</span></div>\n' +
+                            '\n' +
+                            '                    <div class="panel-body" style="height: 150px">\n' +
+                            '                        <div>'+forums[i].content+'</div>\n' +
+                            '                        <div style="margin-left: 30px;font-size: 18px;margin-top: 30px"><a onclick="disp_prompt()">点击评论</a></div>\n' +
+                            '                        <div style="margin-top: 20px">\n' +
+                            '                            <div class="col-md-4"></div>\n' +
+                            '                            <div class="col-md-4">用户：<span style="color: #2aabd2">'+forums[i].usernames+'</span></div>\n' +
+                            '                            <div class="col-md-4">发布时间：<span style="color: #2aabd2">'+getFormatDate(forums[i].date)+'</span></div>\n' +
+                            '                            <div class="col-md-4"></div>\n' +
+                            '                        </div>\n' +
+                            '                    </div>\n' +
+                            '\n' +
+                            '\n' +
+                            '                </div>';
+                        divs +=div;
+                    }
+                    $("#date").html(divs);
+                });
+            });
+        </script>
+    </head>
+    <body class="container">
+    <!--引入头部-->
+    <div id="header"></div>
+    <section id="content">
+        <!-- 黑马精选start-->
+        <section class="hemai_jx">
+            <div class="jx_top">
+                <div class="jx_tit">
+                    <span style="font-size:22px;margin-left:20px;margin-top: -20px;color:#ff803b">四川旅游信息网论坛<a onclick="publish();" style="margin-left: 800px;color:#ff803b">点击发帖</a></span>
+                </div>
+            </div>
+            <div id="date">
+                <div class="panel panel-default" style="margin-top: 20px">
+                    <div class="panel-heading" style="color: #28a4c9;font-size: large">标题：【阿坝骑游】</div>
+                    <div class="panel-body" style="height: 150px">
+                        <div>据武侯发布微博报道，9月29日，@康定情歌木格措风景区 发布公告，2018年国庆节日期间，康定情歌（木格措）风景区实行每天游客总量限制、实时游客流量控制等措施，每天限流15000人。</div>
+                        <div style="margin-left: 30px;font-size: 18px;margin-top: 30px"><a href="#">点击评论</a></div>
+                        <div style="margin-top: 20px">
+                            <div class="col-md-4"></div>
+                            <div class="col-md-4">用户：<span style="color: #2aabd2">zhaosi66</span></div>
+                            <div class="col-md-4">发布时间：<span style="color: #2aabd2">2020/04/02</span></div>
+                            <div class="col-md-4"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </section>
+    <!--导入布局js，共享header和footer-->
+    <script type="text/javascript" src="js/include.js"></script>
+    </body>
+</html>

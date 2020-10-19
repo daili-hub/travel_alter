@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>商品详情</title>
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="css/common.css">
+    <link rel="stylesheet" type="text/css" href="css/route-detail.css">
+</head>
+
+<body class="container">
+<!--引入头部-->
+<div id="header"></div>
+    <!-- 详情 start -->   
+    <div class="wrap">
+        <div class="bread_box">
+            <a href="/">首页</a>
+            <span> &gt;</span>
+            <a href="#" id="category">门票</a><span> &gt;</span>
+            <a href="#" id="detail_name">全国-曼谷6-7天自由行 泰国出境旅游 特价往返机票自由行二次确认</a>
+        </div>
+        <div class="prosum_box">
+            <dl class="prosum_left">
+                <dt >
+                    <img alt="" class="big_img" src="images/1.jpg">
+                </dt>
+                <dd id="dd">
+                    <a class="down_img down_img_disable" style="margin-bottom: 0;"></a>
+                </dd>
+            </dl>
+            <div class="prosum_right">
+               <p class="pros_title" id="rname">【尾单特卖】全国-曼谷6-7天自由行 泰国出境旅游 特价往返机票自由行二次确认</p>
+                <p class="hot" id="routeIntroduce">1-2月出发，网付立享￥1099/2人起！爆款位置有限，抢完即止！</p>
+                <div class="pros_other">
+                    <p>经营商家  ：<span id="sname">四川旅游社</span></p>
+                    <p>咨询电话 : <span id="consphone">0826-6566666</span></p>
+                    <p>地址 ： <span id="address">四川成都青羊区1号</span></p>
+                </div>
+                <div class="pros_price">
+                    <p class="price"><strong id="price">¥2699.00</strong><span>起</span></p>
+                    <p class="collect">
+                        <a class="btn" id="favorite" onclick="addFavorite();"><i class="glyphicon glyphicon-heart-empty"></i>点击收藏</a>
+
+                        <a  class="btn" id="buy" style="background-color: #2aabd2"  >点击购买</a>
+                        <span id="favoriteCount">已收藏100次</span>
+                    </p>
+                </div>        
+            </div>
+        </div>
+    </div>
+    <!-- 详情 end -->
+
+    <!--引入头部-->
+    <!--<div id="footer"></div>-->
+        <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="js/jquery-3.3.1.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="js/bootstrap.min.js"></script>
+    <!--导入布局js，共享header和footer-->
+    <script type="text/javascript" src="js/include.js"></script>
+    <script src="js/getParameter.js"></script>
+    <script>
+    $(document).ready(function() {
+       goImg();
+    });
+    function goImg() {
+        //焦点图效果
+        //点击图片切换图片
+        $('.little_img').on('mousemove', function() {
+            $('.little_img').removeClass('cur_img');
+            var big_pic = $(this).data('bigpic');
+            $('.big_img').attr('src', big_pic);
+            $(this).addClass('cur_img');
+        });
+        //上下切换
+        var picindex = 0;
+        var nextindex = 4;
+        $('.down_img').on('click',function(){
+            var num = $('.little_img').length;
+            if((nextindex + 1) <= num){
+                $('.little_img:eq('+picindex+')').hide();
+                $('.little_img:eq('+nextindex+')').show();
+                picindex = picindex + 1;
+                nextindex = nextindex + 1;
+            }
+        });
+        $('.up_img').on('click',function(){
+            var num = $('.little_img').length;
+            if(picindex > 0){
+                $('.little_img:eq('+(nextindex-1)+')').hide();
+                $('.little_img:eq('+(picindex-1)+')').show();
+                picindex = picindex - 1;
+                nextindex = nextindex - 1;
+            }
+        });
+        //自动播放
+        // var timer = setInterval("auto_play()", 5000);
+    }
+
+    //自动轮播方法
+    function auto_play() {
+        var cur_index = $('.prosum_left dd').find('a.cur_img').index();
+        cur_index = cur_index - 1;
+        var num = $('.little_img').length;
+        var max_index = 3;
+        if ((num - 1) < 3) {
+            max_index = num - 1;
+        }
+        if (cur_index < max_index) {
+            var next_index = cur_index + 1;
+            var big_pic = $('.little_img:eq(' + next_index + ')').data('bigpic');
+            $('.little_img').removeClass('cur_img');
+            $('.little_img:eq(' + next_index + ')').addClass('cur_img');
+            $('.big_img').attr('src', big_pic);
+        } else {
+            var big_pic = $('.little_img:eq(0)').data('bigpic');
+            $('.little_img').removeClass('cur_img');
+            $('.little_img:eq(0)').addClass('cur_img');
+            $('.big_img').attr('src', big_pic);
+        }
+    }
+    $(function () {
+        var rid =  getParameter("rid");
+        $.get("route/findOne",{rid:rid},function (route) {
+            $("#rname").html(route.rname);
+            $("#routeIntroduce").html(route.routeIntroduce);
+            $("#price").html('¥'+route.price);
+            $("#address").html(route.seller.address);
+            $("#consphone").html(route.seller.cosphone);
+            $("#sname").html(route.seller.sname);
+            $("#favoriteCount").html("已收藏"+route.count+"次");
+            var ddstr = '<a class="up_img up_img_disable"></a>';
+            for(var i=0;i<route.routeImgList.length;i++){
+                var astr;
+                if(i>=4){
+                    astr = '<a title="" class="little_img" data-bigpic="'+route.routeImgList[i].bigPic+'"  style="display: none;">\n' +
+                        '                        <img src="'+route.routeImgList[i].smallPic+'">\n' +
+                        '                    </a>';
+                }else{
+                    astr = '<a title="" class="little_img" data-bigpic="'+route.routeImgList[i].bigPic+'"  >\n' +
+                        '                        <img src="'+route.routeImgList[i].smallPic+'">\n' +
+                        '                    </a>';
+                }
+
+                  ddstr +=astr;
+            }
+            ddstr +='<a class="down_img down_img_disable" style="margin-bottom: 0;"></a>';
+            $("#dd").html(ddstr);
+            $("#detail_name").html(route.rname);
+            goImg();
+
+        });
+    });
+    $(function () {
+      var rid = getParameter("rid");
+      $.get("route/isFavorite",{rid:rid},function (flag) {
+          if(flag){
+              //用户已经收藏
+              //设置收藏按钮的样式
+          // <a  class="btn already" disabled="disabled">
+              $("#favorite").addClass("already");
+              $("#favorite").attr("disabled","disabled");
+              $("#favorite").removeAttr("onclick");
+
+          }else {
+              //用户没有收藏
+          }
+      });
+    });
+    function addFavorite() {
+        var rid = getParameter("rid");
+        //1.判断用户是否登录
+        $.get("user/findOne",{},function (user) {
+
+            if(user){
+                $.get("route/addFavorite",{rid:rid},function () {
+                    location.reload();
+                });
+            }else {
+                alert("您尚未登录，请先登录");
+                location.href="http://localhost/travel/login.html";
+            }
+        });
+    }
+    //通过商品地址跳转到第三方平台
+    $(function () {
+        $("#buy").click(function () {
+            alert("即将跳转到途游进行购买");
+            $.get("goods/findOne",{},function (good) {
+                location.href = good.address;
+            });
+        });
+    });
+    </script>
+</body>
+
+</html>
